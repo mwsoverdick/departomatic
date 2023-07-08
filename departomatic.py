@@ -57,6 +57,9 @@ def time_until_next(departures, now):
 
 
 class Departomatic():
+    """
+    System try icon application showing when to leave for the bus
+    """
 
     def __init__(self, options, times) -> None:
         self.color = colors['idk']
@@ -73,6 +76,9 @@ class Departomatic():
             self.options['route'], lambda: donothing))
 
     def run(self):
+        """
+        Start the system tray icon
+        """
         # Run the system tray icon
         self.icon.run(self.setup)
 
