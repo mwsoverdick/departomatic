@@ -1,11 +1,17 @@
-import pystray
-from PIL import Image, ImageDraw
+"""departomatic.py
+
+Creates a Windows system tray icon to let you know when to leave for the bus
+"""
+
 import time
 import threading
-from datetime import datetime, timedelta
 import sys
 import subprocess
 import traceback
+from datetime import datetime, timedelta
+
+import pystray
+from PIL import Image, ImageDraw
 
 from times import read_csv
 from options import get_options
@@ -18,11 +24,20 @@ colors = {
 }
 
 # Initial color of the icon
-color = colors['idk']
-title = "idk"
+COLOR = colors['idk']
+TITLE = "idk"
 
 
-def time_until_next(times, now):
+def time_until_next(departures, now):
+    """Get time until next bus departure
+
+    Args:
+        departures (List[datetime.time]): List of departure times
+        now (datetime): datetime.now()
+
+    Returns:
+        integer: Minutes until next departure
+    """
     # Convert 'now' to a time object if it's a datetime
     if isinstance(now, datetime):
         now = now.time()
@@ -30,11 +45,11 @@ def time_until_next(times, now):
     # Initialize min_diff to a large value
     min_diff = timedelta(days=1)
 
-    for time in times:
+    for departure in departures:
         # Calculate the difference between the time and now
-        if time > now:
+        if departure > now:
             diff = datetime.combine(
-                datetime.today(), time) - datetime.combine(datetime.today(), now)
+                datetime.today(), departure) - datetime.combine(datetime.today(), now)
             # Update min_diff if this difference is the smallest non-negative difference so far
             if diff < min_diff:
                 min_diff = diff
@@ -45,8 +60,8 @@ def time_until_next(times, now):
 def create_image():
     """Creates a new image with the current color"""
     # Generate an image and a draw instance
-    image = Image.new('RGB', (64, 64), color)
-    dc = ImageDraw.Draw(image)
+    image = Image.new('RGB', (64, 64), COLOR)
+    ImageDraw.Draw(image)
     return image
 
 
@@ -58,7 +73,7 @@ def setup(icon):
 
 def update_icon(icon):
     """Updates the icon color based on the current time"""
-    global color
+    global COLOR
 
     options = get_options('./options.yaml')
 
@@ -68,13 +83,13 @@ def update_icon(icon):
         time_left = time_until_next(departures, now)
 
         if time_left > options['wait'] or time_left < options['iffy']:
-            color = colors['wait']
+            COLOR = colors['wait']
         elif time_left > options['go']:
-            color = colors['go']
+            COLOR = colors['go']
         elif time_left > options['iffy']:
-            color = colors['iffy']
+            COLOR = colors['iffy']
         else:
-            color = colors['idk']
+            COLOR = colors['idk']
 
         icon.icon = create_image()
         icon.title = f"{options['route']}\nDeparts in {time_left:.1f} min"
@@ -84,10 +99,13 @@ def update_icon(icon):
 
 
 def donothing():
-    pass
+    """Does nothing
+    """
 
 
 def main():
+    """Main program loop, runs indefinitely
+    """
     while True:
         try:
             # Create a new system tray icon
@@ -102,8 +120,8 @@ def main():
 
             # Run the system tray icon
             icon.run(setup)
-        except Exception as e:
-            print(traceback.extract_tb(e))
+        except Exception as ex:
+            print(traceback.extract_tb(ex))
 
 
 if __name__ == '__main__':
@@ -111,7 +129,8 @@ if __name__ == '__main__':
         main()
     else:
         # Use pythonw to start this script as a background process
-        # Pass --background argument to indicate that the script is now running as a background process
+        # Pass --background argument to indicate that the script is
+        # now running as a background process
         subprocess.Popen(['pythonw', __file__, '--background'])
 
         # Exit the parent process

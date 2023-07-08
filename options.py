@@ -1,9 +1,21 @@
+"""options.py
+Program options loading interface
+"""
+
 import yaml
 
 
 def get_options(file):
-    with open(file, 'r') as f:
-        options = yaml.safe_load(f)
+    """Load options yaml file
+
+    Args:
+        file (str): Path to options.yaml file
+
+    Returns:
+        dict: options
+    """
+    with open(file, 'r', encoding='utf-8') as optionsfile:
+        options = yaml.safe_load(optionsfile)
 
     return options
 
