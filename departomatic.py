@@ -7,7 +7,6 @@ import time
 import threading
 import sys
 import subprocess
-import traceback
 from datetime import datetime, timedelta
 
 import pystray
@@ -107,21 +106,18 @@ def main():
     """Main program loop, runs indefinitely
     """
     while True:
-        try:
-            # Create a new system tray icon
-            icon = pystray.Icon(
-                "test_icon", create_image(), "Departomatic")
-            # Start a new thread that updates the icon
-            threading.Thread(target=update_icon, args=(icon,)).start()
+        # Create a new system tray icon
+        icon = pystray.Icon(
+            "test_icon", create_image(), "Departomatic")
+        # Start a new thread that updates the icon
+        threading.Thread(target=update_icon, args=(icon,)).start()
 
-            options = get_options('./options.yaml')
-            icon.menu = pystray.Menu(pystray.MenuItem(
-                options['route'], lambda: donothing))
+        options = get_options('./options.yaml')
+        icon.menu = pystray.Menu(pystray.MenuItem(
+            options['route'], lambda: donothing))
 
-            # Run the system tray icon
-            icon.run(setup)
-        except Exception as ex:
-            print(traceback.extract_tb(ex))
+        # Run the system tray icon
+        icon.run(setup)
 
 
 if __name__ == '__main__':
