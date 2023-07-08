@@ -56,45 +56,59 @@ def time_until_next(departures, now):
     return min_diff.total_seconds() / 60  # Return the difference in minutes
 
 
-def create_image():
-    """Creates a new image with the current color"""
-    # Generate an image and a draw instance
-    image = Image.new('RGB', (64, 64), COLOR)
-    ImageDraw.Draw(image)
-    return image
+class Departomatic():
 
+    def __init__(self, options, times) -> None:
+        self.color = colors['idk']
+        self.options = get_options(options)
+        self.departures = read_csv(times)
 
-def setup(icon):
-    """Sets the icon to visible"""
-    icon.visible = True
-    update_icon(icon)
+        # Create a new system tray icon
+        self.icon = pystray.Icon(
+            "test_icon", self.create_image(), "Departomatic")
+        # Start a new thread that updates the icon
+        threading.Thread(target=self.update_icon, args=(self.icon,)).start()
 
+        self.icon.menu = pystray.Menu(pystray.MenuItem(
+            self.options['route'], lambda: donothing))
 
-def update_icon(icon):
-    """Updates the icon color based on the current time"""
-    global COLOR
+    def run(self):
+        # Run the system tray icon
+        self.icon.run(self.setup)
 
-    options = get_options('./options.yaml')
+    def create_image(self):
+        """Creates a new image with the current color"""
+        # Generate an image and a draw instance
+        image = Image.new('RGB', (64, 64), self.color)
+        ImageDraw.Draw(image)
+        return image
 
-    while True:
-        now = datetime.now()
-        departures = read_csv('times.csv')
-        time_left = time_until_next(departures, now)
+    def setup(self, icon):
+        """Sets the icon to visible"""
+        icon.visible = True
+        self.update_icon(icon)
 
-        if time_left > options['wait'] or time_left < options['iffy']:
-            COLOR = colors['wait']
-        elif time_left > options['go']:
-            COLOR = colors['go']
-        elif time_left > options['iffy']:
-            COLOR = colors['iffy']
-        else:
-            COLOR = colors['idk']
+    def update_icon(self, icon):
+        """Updates the icon color based on the current time"""
 
-        icon.icon = create_image()
-        icon.title = f"{options['route']}\nDeparts in {time_left:.1f} min"
+        while True:
+            now = datetime.now()
+            time_left = time_until_next(self.departures, now)
 
-        # Wait for a while before the next update
-        time.sleep(15)
+            if time_left > self.options['wait'] or time_left < self.options['iffy']:
+                self.color = colors['wait']
+            elif time_left > self.options['go']:
+                self.color = colors['go']
+            elif time_left > self.options['iffy']:
+                self.color = colors['iffy']
+            else:
+                self.color = colors['idk']
+
+            icon.icon = self.create_image()
+            icon.title = f"{self.options['route']}\nDeparts in {time_left:.1f} min"
+
+            # Wait for a while before the next update
+            time.sleep(15)
 
 
 def donothing():
@@ -105,19 +119,8 @@ def donothing():
 def main():
     """Main program loop, runs indefinitely
     """
-    while True:
-        # Create a new system tray icon
-        icon = pystray.Icon(
-            "test_icon", create_image(), "Departomatic")
-        # Start a new thread that updates the icon
-        threading.Thread(target=update_icon, args=(icon,)).start()
-
-        options = get_options('./options.yaml')
-        icon.menu = pystray.Menu(pystray.MenuItem(
-            options['route'], lambda: donothing))
-
-        # Run the system tray icon
-        icon.run(setup)
+    departo = Departomatic('./options.yaml', './times.csv')
+    departo.run()
 
 
 if __name__ == '__main__':
