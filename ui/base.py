@@ -6,6 +6,9 @@ from ui.common.options import get_options
 
 
 class Departomatic():
+    """
+    Base class for departomatic application
+    """
     def __init__(self, options, times) -> None:
         self.options = get_options(options)
         self.departures = read_csv(times)

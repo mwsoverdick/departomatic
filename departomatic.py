@@ -10,22 +10,28 @@ import subprocess
 
 
 def detect_os():
+    """
+    More friendly OS detection mechanism
+
+    Returns:
+        OS: "Windows", "MacOS", "Unknown"
+    """
     os_name = platform.system()
     if os_name == 'Darwin':
         return 'MacOS'
-    elif os_name == 'Windows':
+    if os_name == 'Windows':
         return 'Windows'
-    else:
-        return 'Unknown'
+
+    return 'Unknown'
 
 
 def main():
     """Main program loop, runs indefinitely
     """
-    os = detect_os()
-    if os == 'MacOS':
+    operating_system = detect_os()
+    if operating_system == 'MacOS':
         lib = importlib.import_module('ui.macos')
-    elif os == 'Windows':
+    elif operating_system == 'Windows':
         lib = importlib.import_module('ui.windows')
     else:
         print("unsupported os")
@@ -42,10 +48,10 @@ if __name__ == '__main__':
         # Use pythonw to start this script as a background process
         # Pass --background argument to indicate that the script is
         # now running as a background process
-        os = detect_os()
-        if os == 'Windows':
+        OPERATING_SYSTEM = detect_os()
+        if OPERATING_SYSTEM == 'Windows':
             subprocess.Popen(['pythonw', __file__, '--background'])
-        elif os == 'MacOS':
+        elif OPERATING_SYSTEM == 'MacOS':
             subprocess.Popen(['python3', __file__, '--background'])
         else:
             print("unsupported os")

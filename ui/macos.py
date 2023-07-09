@@ -1,20 +1,13 @@
 """windows.py
 Windows-only implementation of departomatic
 """
-import time
 import threading
 from datetime import datetime
-
 import rumps
-from PIL import Image, ImageDraw
 
 from ui.base import Departomatic
-from ui.common.times import read_csv, time_until_next
+from ui.common.times import time_until_next
 
-import rumps
-import threading
-import os
-from PIL import Image
 
 icons = {
     'go': './ui/icons/macos/go.icns',
@@ -24,30 +17,6 @@ icons = {
 }
 
 
-class MenubarApp(rumps.App):
-    def __init__(self, *args, **kwargs):
-        super(MenubarApp, self).__init__(*args, **kwargs)
-        self.icon_paths = [icons['go'], icons['wait']]
-        self.icon_index = 0
-        self.timer = threading.Timer(0.15, self.change_icon)
-        self.timer.start()
-        # Add non-clickable text box to menu
-        self.menu = [rumps.MenuItem(
-            "Non-clickable text", callback=None), None]
-        self.menu['Non-clickable text'].set_callback(None)
-
-    def change_icon(self):
-        self.icon = self.icon_paths[self.icon_index]
-        self.icon_index = (self.icon_index + 1) % len(self.icon_paths)
-        self.timer = threading.Timer(30.0, self.change_icon)
-        self.timer.start()
-
-    def quit(self, sender):
-        if self.timer:
-            self.timer.cancel()
-        super(MenubarApp, self).quit(sender)
-
-
 class App(rumps.App, Departomatic):
     """
     System try icon application showing when to leave for the bus
@@ -55,6 +24,7 @@ class App(rumps.App, Departomatic):
 
     def __init__(self, options, times):
         Departomatic.__init__(self, options, times)
+        self.icon = None # Gets reinitialized in rumps init below
         rumps.App.__init__(self,
                            "Departomatic", icon=icons['idk'])
         self.timer = threading.Timer(0.15, self.change_icon)
@@ -68,6 +38,9 @@ class App(rumps.App, Departomatic):
         self.route_info = self.menu[self.options['route']]
 
     def change_icon(self):
+        """
+        Changes icon when called to appropriate state for next bus departure
+        """
         now = datetime.now()
         time_left = time_until_next(self.departures, now)
 
@@ -86,6 +59,12 @@ class App(rumps.App, Departomatic):
         self.timer.start()
 
     def quit(self, sender):
+        """
+        Rumps quit callback for quitting the application
+
+        Args:
+            sender: Sender from Rumps
+        """
         if self.timer:
             self.timer.cancel()
         rumps.App.quit(self, sender)

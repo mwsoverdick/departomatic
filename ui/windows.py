@@ -6,7 +6,7 @@ import threading
 from datetime import datetime
 
 import pystray
-from PIL import Image, ImageDraw
+from PIL import Image
 
 from ui.base import Departomatic
 from ui.common.times import time_until_next
@@ -56,15 +56,15 @@ class App(Departomatic):
             time_left = time_until_next(self.departures, now)
 
             if time_left > self.options['wait'] or time_left < self.options['iffy']:
-                self.color = icons['wait']
+                color = icons['wait']
             elif time_left > self.options['go']:
-                self.color = icons['go']
+                color = icons['go']
             elif time_left > self.options['iffy']:
-                self.color = icons['iffy']
+                color = icons['iffy']
             else:
-                self.color = icons['idk']
+                color = icons['idk']
 
-            icon.icon = Image.open(self.color)
+            icon.icon = Image.open(color)
             icon.title = f"{self.options['route']}\nDeparts in {time_left:.1f} min"
 
             # Wait for a while before the next update
