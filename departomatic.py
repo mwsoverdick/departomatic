@@ -26,7 +26,7 @@ def main():
     if os == 'MacOS':
         lib = importlib.import_module('ui.macos')
     elif os == 'Windows':
-        lib = importlib.import_module('ui.macos')
+        lib = importlib.import_module('ui.windows')
     else:
         print("unsupported os")
         sys.exit(1)
