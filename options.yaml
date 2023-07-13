@@ -2,3 +2,6 @@ route: "SoundTransit 542X WB" # Route name here
 wait: 10 # Don't bother if there's more than this many minutes until the bus leaves
 go: 8 # Solid chance if there's more than this many minutes until the bus leaves
 iffy: 6 # Iffy if there's more than this many minutes until the bus leaves
+annoy: True
+# annoy_start: "4:00 PM"
+# annoy_stop: "7:00 PM"

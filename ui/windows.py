@@ -3,7 +3,8 @@ Windows-only implementation of departomatic
 """
 import time
 import threading
-from datetime import datetime
+from datetime import datetime, timedelta
+from win10toast import ToastNotifier
 
 import pystray
 from PIL import Image
@@ -29,43 +30,29 @@ class App(Departomatic):
 
         # Create a new system tray icon
         self.icon = pystray.Icon(
-            "test_icon", Image.open(icons['idk']), "Departomatic")
+            "Starting...", Image.open(icons['idk']), "Departomatic", None)
         # Start a new thread that updates the icon
-        threading.Thread(target=self.update_icon, args=(self.icon,)).start()
-
-        self.icon.menu = pystray.Menu(pystray.MenuItem(
-            self.options['route'], None))
+        # threading.Thread(target=self.update_icon, args=(self.icon,)).start()
 
     def run(self):
         """
         Start the system tray icon
         """
         # Run the system tray icon
-        self.icon.run(self.setup)
+        self.icon.run_detached()
 
-    def setup(self, icon):
-        """Sets the icon to visible"""
-        icon.visible = True
-        self.update_icon(icon)
+        super().run()
 
-    def update_icon(self, icon):
+    def annoy_msg(self, message):
+        title = "You should probably go."
+        toaster = ToastNotifier()
+        toaster.show_toast(title, message, duration=2, threaded=True)
+
+    def update_icon(self, time_left):
         """Updates the icon color based on the current time"""
-
-        while True:
-            now = datetime.now()
-            time_left = time_until_next(self.departures, now)
-
-            if time_left > self.options['wait'] or time_left < self.options['iffy']:
-                color = icons['wait']
-            elif time_left > self.options['go']:
-                color = icons['go']
-            elif time_left > self.options['iffy']:
-                color = icons['iffy']
-            else:
-                color = icons['idk']
-
-            icon.icon = Image.open(color)
-            icon.title = f"{self.options['route']}\nDeparts in {time_left:.1f} min"
-
-            # Wait for a while before the next update
-            time.sleep(15)
+        self.icon.visible = True
+        self.icon.icon = Image.open(icons[self.status])
+        if time_left is None:
+            self.icon.title = f"{self.options['route']}\nDeparts in ??? min"
+        else:
+            self.icon.title = f"{self.options['route']}\nDeparts in {time_left:.1f} min"
