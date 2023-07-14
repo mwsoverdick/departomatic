@@ -19,22 +19,13 @@ class Departomatic():
             options: path to options.yaml
             times: path to times.csv
         """
+
         self.options = get_options(options)
         self.departures = read_csv(times)
-        self.annoy_start = None
-        self.annoy_stop = None
         self.status = "idk"
         self.last_annoyed = None
 
-        if "annoy" in self.options and self.options["annoy"]:
-            self.enable_annoy = True
-        else:
-            self.enable_annoy = False
-
-        if "annoy_start" in self.options and "annoy_stop" in self.options:
-            self.annoy_start = strip_time(self.options['annoy_start'])
-            self.annoy_stop = strip_time(self.options['annoy_stop'])
-
+        # Start time checking timer thread to run every 15s
         self.timer = threading.Timer(15.0, self.time_checker)
 
     def time_checker(self): 
@@ -105,11 +96,11 @@ class Departomatic():
         """
         annoy = False
         now = now.time()
-        if self.enable_annoy:
+        if self.options["annoy"]["enable"]:
             if self.status == "go" or self.status == "iffy":
-                if self.annoy_start is None and self.annoy_stop is None:
+                if self.options["annoy"]["start"] is None and self.options["annoy"]["stop"] is None:
                     annoy = True
-                elif now >= self.annoy_start and now <= self.annoy_stop:
+                elif now >= self.options["annoy"]["start"] and now <= self.options["annoy"]["stop"]:
                     annoy = True
         return annoy
 
