@@ -61,7 +61,7 @@ class App(rumps.App, Departomatic):
         else:
             self.route_info.title = f"{self.options['route']}\nDeparts in {time_left:.1f} min"
 
-    def quit(self, sender):
+    def quit(self):
         """
         Rumps quit callback for quitting the application
 

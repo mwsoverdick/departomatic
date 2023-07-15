@@ -97,10 +97,10 @@ class Departomatic():
         annoy = False
         now = now.time()
         if self.options["annoy"]["enable"]:
-            if self.status == "go" or self.status == "iffy":
+            if self.status in ("go", "iffy"):
                 if self.options["annoy"]["start"] is None and self.options["annoy"]["stop"] is None:
                     annoy = True
-                elif now >= self.options["annoy"]["start"] and now <= self.options["annoy"]["stop"]:
+                elif self.options["annoy"]["start"] <= now <= self.options["annoy"]["stop"]:
                     annoy = True
         return annoy
 

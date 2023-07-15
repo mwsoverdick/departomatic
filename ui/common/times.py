@@ -6,6 +6,14 @@ import csv
 from datetime import datetime, timedelta
 
 def strip_time(string):
+    """Convert a time string to a datetime.time()
+
+    Args:
+        string (str): A time string, such as 5:00PM
+
+    Returns:
+        datetime.time: time object
+    """
     return datetime.strptime(string.strip().replace('a.m.', 'AM').replace(
             'p.m.', 'PM'), '%I:%M %p').time()
 
