@@ -1,8 +1,6 @@
 """windows.py
 Windows-only implementation of departomatic
 """
-import threading
-from datetime import datetime
 import rumps
 
 from ui.base import Departomatic
@@ -36,8 +34,8 @@ class App(rumps.App, Departomatic):
         self.route_info = self.menu[self.options['route']]
 
     def run(self):
-        rumps.run(self)
         Departomatic.run(self)
+        rumps.App.run(self)
     
     def annoy_msg(self, title, message):
         # TODO: Implement MacOS notifications
@@ -62,5 +60,5 @@ class App(rumps.App, Departomatic):
         Args:
             sender: Sender from Rumps
         """
-        Departomatic._stop(self)
         rumps.App.quit(self, sender)
+        Departomatic._stop(self)
