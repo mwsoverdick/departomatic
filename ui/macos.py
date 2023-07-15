@@ -3,8 +3,8 @@ Windows-only implementation of departomatic
 """
 import rumps
 
+from pync import Notifier
 from ui.base import Departomatic
-from ui.common.times import time_until_next
 
 
 icons = {
@@ -33,13 +33,21 @@ class App(rumps.App, Departomatic):
 
         self.route_info = self.menu[self.options['route']]
 
-    def run(self):
+    def run(self, **options):
+        """Start departomatic
+        """
         Departomatic.run(self)
-        rumps.App.run(self)
-    
+        rumps.App.run(self, **options)
+
     def annoy_msg(self, title, message):
-        # TODO: Implement MacOS notifications
-        pass
+        # com.mwsoverdick.departomatic used as placeholder for possible
+        # app bundling later. For now, will be TERMINAL-NOTIFIER
+        Notifier.notify(message,
+                        title=title,
+                        sound='default',
+                        group="Departomatic",
+                        sender='com.mwsoverdick.departomatic',
+                        )
 
     def update_icon(self, time_left):
         """
@@ -60,5 +68,4 @@ class App(rumps.App, Departomatic):
         Args:
             sender: Sender from Rumps
         """
-        rumps.App.quit(self, sender)
         Departomatic._stop(self)

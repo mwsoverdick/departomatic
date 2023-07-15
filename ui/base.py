@@ -1,10 +1,10 @@
 """base.py
 base Departomatic class
 """
+import threading
+from datetime import datetime, timedelta
 from ui.common.times import read_csv, time_until_next
 from ui.common.options import get_options
-from datetime import datetime, timedelta
-import threading
 
 
 class Departomatic():
@@ -28,7 +28,7 @@ class Departomatic():
         # Start time checking timer thread to run every 15s
         self.timer = threading.Timer(15.0, self.time_checker)
 
-    def time_checker(self): 
+    def time_checker(self):
         """
         Time checker thread.
 
