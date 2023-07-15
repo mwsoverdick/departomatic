@@ -1,7 +1,7 @@
 """base.py
 base Departomatic class
 """
-from ui.common.times import read_csv, strip_time, time_until_next
+from ui.common.times import read_csv, time_until_next
 from ui.common.options import get_options
 from datetime import datetime, timedelta
 import threading
