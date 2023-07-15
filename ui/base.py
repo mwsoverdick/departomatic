@@ -119,6 +119,13 @@ class Departomatic():
         """
         raise NotImplementedError("annoy_msg not implemented")
 
+    def _stop(self):
+        """
+        Stops the recursive timers
+        """
+        if self.timer:
+            self.timer.cancel()
+
     def run(self):
         """
         Start the application

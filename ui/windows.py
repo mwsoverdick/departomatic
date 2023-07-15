@@ -27,6 +27,15 @@ class App(Departomatic):
         # Create a new system tray icon
         self.icon = pystray.Icon(
             "Starting...", Image.open(icons['idk']), "Departomatic", None)
+        self.icon.menu = pystray.Menu(pystray.MenuItem(
+                "Exit", self.quit))
+
+    def quit(self):
+        """
+        Stop the icon and exit
+        """
+        self.icon.stop()  # Stop the system tray icon
+        super()._stop()
 
     def run(self):
         """

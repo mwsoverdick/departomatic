@@ -27,8 +27,6 @@ class App(rumps.App, Departomatic):
         self.icon = None # Gets reinitialized in rumps init below
         rumps.App.__init__(self,
                            "Departomatic", icon=icons['idk'])
-        self.timer = threading.Timer(0.15, self.change_icon)
-        self.timer.start()
 
         # Add non-clickable text box to menu for route info
         self.menu = [rumps.MenuItem(
@@ -37,26 +35,25 @@ class App(rumps.App, Departomatic):
 
         self.route_info = self.menu[self.options['route']]
 
-    def change_icon(self):
+    def run(self):
+        rumps.run(self)
+        Departomatic.run(self)
+    
+    def annoy_msg(self, title, message):
+        # TODO: Implement MacOS notifications
+        pass
+
+    def update_icon(self, time_left):
         """
         Changes icon when called to appropriate state for next bus departure
         """
-        now = datetime.now()
-        time_left = time_until_next(self.departures, now)
 
-        if time_left > self.options['wait'] or time_left < self.options['iffy']:
-            self.icon = icons['wait']
-        elif time_left > self.options['go']:
-            self.icon = icons['go']
-        elif time_left > self.options['iffy']:
-            self.icon = icons['iffy']
+        self.icon = icons[self.status]
+
+        if time_left is None:
+            self.route_info.title = f"{self.options['route']}\nDeparts in ??? min"
         else:
-            self.icon = icons['idk']
-
-        self.route_info.title = f"{self.options['route']} departs in {time_left:.1f} min"
-
-        self.timer = threading.Timer(30.0, self.change_icon)
-        self.timer.start()
+            self.route_info.title = f"{self.options['route']}\nDeparts in {time_left:.1f} min"
 
     def quit(self, sender):
         """
@@ -65,6 +62,5 @@ class App(rumps.App, Departomatic):
         Args:
             sender: Sender from Rumps
         """
-        if self.timer:
-            self.timer.cancel()
+        Departomatic._stop(self)
         rumps.App.quit(self, sender)
