@@ -1,12 +1,10 @@
 """windows.py
 Windows-only implementation of departomatic
 """
-import threading
-from datetime import datetime
 import rumps
 
+from pync import Notifier
 from ui.base import Departomatic
-from ui.common.times import time_until_next
 
 
 icons = {
@@ -27,8 +25,6 @@ class App(rumps.App, Departomatic):
         self.icon = None # Gets reinitialized in rumps init below
         rumps.App.__init__(self,
                            "Departomatic", icon=icons['idk'])
-        self.timer = threading.Timer(0.15, self.change_icon)
-        self.timer.start()
 
         # Add non-clickable text box to menu for route info
         self.menu = [rumps.MenuItem(
@@ -37,34 +33,39 @@ class App(rumps.App, Departomatic):
 
         self.route_info = self.menu[self.options['route']]
 
-    def change_icon(self):
+    def run(self, **options):
+        """Start departomatic
+        """
+        Departomatic.run(self)
+        rumps.App.run(self, **options)
+
+    def annoy_msg(self, title, message):
+        # com.mwsoverdick.departomatic used as placeholder for possible
+        # app bundling later. For now, will be TERMINAL-NOTIFIER
+        Notifier.notify(message,
+                        title=title,
+                        sound='default',
+                        group="Departomatic",
+                        sender='com.mwsoverdick.departomatic',
+                        )
+
+    def update_icon(self, time_left):
         """
         Changes icon when called to appropriate state for next bus departure
         """
-        now = datetime.now()
-        time_left = time_until_next(self.departures, now)
 
-        if time_left > self.options['wait'] or time_left < self.options['iffy']:
-            self.icon = icons['wait']
-        elif time_left > self.options['go']:
-            self.icon = icons['go']
-        elif time_left > self.options['iffy']:
-            self.icon = icons['iffy']
+        self.icon = icons[self.status]
+
+        if time_left is None:
+            self.route_info.title = f"{self.options['route']}\nDeparts in ??? min"
         else:
-            self.icon = icons['idk']
+            self.route_info.title = f"{self.options['route']}\nDeparts in {time_left:.1f} min"
 
-        self.route_info.title = f"{self.options['route']} departs in {time_left:.1f} min"
-
-        self.timer = threading.Timer(30.0, self.change_icon)
-        self.timer.start()
-
-    def quit(self, sender):
+    def quit(self):
         """
         Rumps quit callback for quitting the application
 
         Args:
             sender: Sender from Rumps
         """
-        if self.timer:
-            self.timer.cancel()
-        rumps.App.quit(self, sender)
+        Departomatic._stop(self)

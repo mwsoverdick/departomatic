@@ -5,6 +5,17 @@ bus stop schedule interface.
 import csv
 from datetime import datetime, timedelta
 
+def strip_time(string):
+    """Convert a time string to a datetime.time()
+
+    Args:
+        string (str): A time string, such as 5:00PM
+
+    Returns:
+        datetime.time: time object
+    """
+    return datetime.strptime(string.strip().replace('a.m.', 'AM').replace(
+            'p.m.', 'PM'), '%I:%M %p').time()
 
 def read_csv(filename):
     """Reads a CSV of bus stop times and returns them as datetime objects 
@@ -18,8 +29,7 @@ def read_csv(filename):
     with open(filename, 'r', encoding='utf-8') as csvfile:
         reader = csv.reader(csvfile)
         next(reader)  # Skip the header
-        stoptimes = [datetime.strptime(row[0].strip().replace('a.m.', 'AM').replace(
-            'p.m.', 'PM'), '%I:%M %p').time() for row in reader]
+        stoptimes = [strip_time(row[0]) for row in reader]
     return stoptimes
 
 
