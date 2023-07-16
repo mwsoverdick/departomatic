@@ -1,4 +1,6 @@
 Pillow==10.0.0
+pync==2.0.3
 pystray==0.19.4
 PyYAML==6.0
 rumps==0.4.0
+win10toast==0.9
