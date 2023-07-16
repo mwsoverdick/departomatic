@@ -2,8 +2,8 @@ route: "SoundTransit 542X WB" # Route name here
 wait: 10 # Don't bother if there's more than this many minutes until the bus leaves
 go: 8 # Solid chance if there's more than this many minutes until the bus leaves
 iffy: 6 # Iffy if there's more than this many minutes until the bus leaves
-annoy: 
-  enable: true
-  rate: 1
-  start: "3:45 PM"
-  stop: "7:00 PM"
+annoy: # Configure annoying feature
+  enable: true # enable the feature
+  rate: 1 # Annoy me every minute
+  start: "3:45 PM" # Start annoying at 3:45 PM
+  stop: "7:00 PM" # Stop annoying at 7:00 PM

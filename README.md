@@ -53,6 +53,13 @@ This CSV expects the following format rules:
 2. `wait` - The threshold for when it's too long of a time to departure to bother heading to the bus (in minutes)
 3. `go` - The threshold for when it's a prime opportunity to head to the bus (in minutes)
 4. `iffy` - The threshold for when you might risk missing the bus if you leave now (in minutes)
+5. `annoy` - Configuration of the annoy feature to send notifications to bug you to leave for the bus
+   1. `enable` - `true`/`false` to enable/disable the feature.
+   2. `rate` - The rate at which notifications should appear (in minutes). Defaults to 1
+   3. `start` - The start time when the app should be annoying
+   4. `stop` - The stop time when the app should no longer be annoying
+   5. (notes)
+      1. Do not include `start` or `stop` to have it annoy 24/7
 
 #### Thresholds Explained
 
@@ -70,6 +77,12 @@ iffy: 4
 ```
 
 This would tell you to go to the bus when there is 5 to 8 minutes until the scheduled departure. It would tell you that it is risky if there is 4-5 minutes to departure (you might need to run). And it would tell you to wait if there is less than 4 minutes to departure, or greater than 8 minutes.
+
+#### Annoy Feature Explained
+
+Imagine you work very hard, and because you work hard you focus on your task at hand. It would be very likely for you to not check your system tray routinely to catch a glimpse of whether or not you should go home. Perhaps you also lose all concept of time, and you see that you should go but are unaware you've been at work for 10 hours.
+
+Well, the annoy feature attempts to resolve this issue, by providing a slightly to very annoying system notification when it is an opportune time to leave so that you'll consider actually doing so.
 
 ## "installing"
 
