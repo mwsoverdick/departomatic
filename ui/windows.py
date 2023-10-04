@@ -28,7 +28,9 @@ class App(Departomatic):
         self.icon = pystray.Icon(
             "Starting...", Image.open(icons['idk']), "Departomatic", None)
         self.icon.menu = pystray.Menu(pystray.MenuItem(
-                "Exit", self.quit))
+                "Exit", self.quit),
+                pystray.MenuItem(
+                f"Snooze for {self.options['annoy']['snooze']} hours", self.snooze))
 
     def quit(self):
         """
