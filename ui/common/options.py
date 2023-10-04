@@ -60,6 +60,10 @@ def __sanitize_annoy(options):
     # If not specified, the annoy rate is every minute
     if "rate" not in options["annoy"]:
         options["annoy"]["rate"] = 1
+    
+    # If not specified, snooze is 1 hour
+    if "snooze" not in options["annoy"]:
+        options["annoy"]["snooze"] = 1
 
     return options
 

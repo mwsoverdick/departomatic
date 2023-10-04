@@ -58,7 +58,8 @@ This CSV expects the following format rules:
    2. `rate` - The rate at which notifications should appear (in minutes). Defaults to 1
    3. `start` - The start time when the app should be annoying
    4. `stop` - The stop time when the app should no longer be annoying
-   5. (notes)
+   5. `snooze` - Time in hours to snooze when option is selected
+   6. (notes)
       1. Do not include `start` or `stop` to have it annoy 24/7
 
 #### Thresholds Explained

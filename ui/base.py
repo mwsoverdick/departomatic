@@ -24,6 +24,7 @@ class Departomatic():
         self.departures = read_csv(times)
         self.status = "idk"
         self.last_annoyed = None
+        self.snooze_expire = datetime(1970, 1, 1) # Use epoch for initial snooze
 
         # Start time checking timer thread to run every 15s
         self.timer = threading.Timer(15.0, self.time_checker)
@@ -68,6 +69,9 @@ class Departomatic():
         """
         raise NotImplementedError("update_icon not implemented!")
 
+    def snooze(self):
+        self.snooze_expire = datetime.now() + timedelta(hours=self.options['annoy']['snooze'])
+
     def annoy(self, time_left):
         """
         Given configuration of options.yaml, this will annoy the user to leave.
@@ -79,10 +83,11 @@ class Departomatic():
         """
         title = "You should probably go."
         now = datetime.now()
-        if self.should_annoy(now):
-            if self.last_annoyed is None or (self.last_annoyed + timedelta(minutes=1)) < now:
-                self.annoy_msg(title, f"Bus departs in {time_left:.1f} minutes!")
-                self.last_annoyed = now
+        if now > self.snooze_expire:
+            if self.should_annoy(now):
+                if self.last_annoyed is None or (self.last_annoyed + timedelta(minutes=1)) < now:
+                    self.annoy_msg(title, f"Bus departs in {time_left:.1f} minutes!")
+                    self.last_annoyed = now
 
     def should_annoy(self, now):
         """

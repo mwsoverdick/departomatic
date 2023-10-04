@@ -7,3 +7,4 @@ annoy: # Configure annoying feature
   rate: 1 # Annoy me every minute
   start: "3:45 PM" # Start annoying at 3:45 PM
   stop: "7:00 PM" # Stop annoying at 7:00 PM
+  snooze: 12 # Snooze for 12 hours
